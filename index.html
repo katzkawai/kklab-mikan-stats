@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>なぜみかんの収穫量は激減したのか？ - 農林水産省 作物統計から読み解く推移と背景</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary-color: #e65100;
+      --primary-light: #fff3e0;
+      --text-main: #2d3748;
+      --text-muted: #718096;
+      --bg-main: #f7fafc;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.7;
+      padding: 24px 16px;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, #ff9800, #f57c00);
+      color: white;
+      padding: 40px 28px;
+      border-radius: 16px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 12px rgba(245, 124, 0, 0.2);
+    }
+
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    header p {
+      font-size: 1rem;
+      opacity: 0.95;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .kpi-card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .kpi-title {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .kpi-sub {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      border: 1px solid var(--border-color);
+      padding: 28px;
+      margin-bottom: 32px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .card h2 {
+      font-size: 1.35rem;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--primary-light);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 380px;
+      width: 100%;
+      margin: 16px 0;
+    }
+
+    .phase-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .phase-item {
+      border-left: 4px solid var(--primary-color);
+      background: var(--bg-main);
+      padding: 16px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .phase-item h3 {
+      font-size: 1.05rem;
+      margin-bottom: 6px;
+      color: var(--primary-color);
+    }
+
+    .reasons-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .reason-box {
+      background: var(--bg-main);
+      padding: 20px;
+      border-radius: 12px;
+      border-top: 3px solid var(--primary-color);
+    }
+
+    .reason-box h3 {
+      font-size: 1rem;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .reason-box p {
+      font-size: 0.9rem;
+      color: #4a5568;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>なぜみかんの収穫量は激減したのか？</h1>
+      <p>農林水産省「作物統計」の長期データ（1960年〜2024年）から見る推移と構造的要因</p>
+    </header>
+
+    <!-- KPIカード -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-title">ピーク時収穫量（1975年）</div>
+        <div class="kpi-value">3,461 <span style="font-size:1rem;">千t</span></div>
+        <div class="kpi-sub">約346万トン（過去最高）</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">直近収穫量（2024年）</div>
+        <div class="kpi-value">559.6 <span style="font-size:1rem;">千t</span></div>
+        <div class="kpi-sub">約56万トン（過去最低水準）</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">ピーク比減少率</div>
+        <div class="kpi-value">-83.8%</div>
+        <div class="kpi-sub">約 1/6 に減少</div>
+      </div>
+    </div>
+
+    <!-- グラフ表示 -->
+    <div class="card">
+      <h2>果実収穫量の年次推移（1960年〜2024年）</h2>
+      <p style="font-size: 0.9rem; color: var(--text-muted);">
+        みかんは1975年をピークに急激に減少。りんごや日本なしと比較しても落ち込みが顕著です。（単位: 千トン）
+      </p>
+      <div class="chart-container">
+        <canvas id="harvestChart"></canvas>
+      </div>
+    </div>
+
+    <!-- 歴史的フェーズ -->
+    <div class="card">
+      <h2>収穫量推移の4つの歴史的フェーズ</h2>
+      <div class="phase-list">
+        <div class="phase-item">
+          <h3>1. 急拡大期（1960年〜1975年）</h3>
+          <p>戦後の果樹振興策や高収益作物としての人気の高まり（「黄色いダイヤ」時代）により、1960年の903千tから1975年の3,461千tへ急拡大しました。</p>
+        </div>
+        <div class="phase-item">
+          <h3>2. 生産調整・減反期（1975年〜1990年）</h3>
+          <p>大豊作による価格暴落（ミカンショック）を契機に、過剰供給是正のための伐採・新植制限・他作物への転作が進められました。</p>
+        </div>
+        <div class="phase-item">
+          <h3>3. 輸入自由化と品質重視への転換（1990年〜2000年代）</h3>
+          <p>1991〜1992年のオレンジ輸入自由化を受け、「大量生産」から「高糖度ブランド化」や「高級中晩柑（デコポン、せとか等）」への移行が本格化しました。</p>
+        </div>
+        <div class="phase-item">
+          <h3>4. 高齢化・気候変動による縮小期（2010年代〜現在）</h3>
+          <p>傾斜地作業の難しさによる生産者の高齢化・離農、さらに夏季の記録的猛暑や秋口の高温障害が重なり、2024年には559.6千tまで減少しました。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 激減した4つの主な要因 -->
+    <div class="card">
+      <h2>激減の背景にある4つの構造的要因</h2>
+      <div class="reasons-grid">
+        <div class="reason-box">
+          <h3>1. 計画的な生産調整（減反）</h3>
+          <p>かつての過剰作付けによる価格暴落を防ぐため、国と産地が一体となって園地の整理・伐採を進めた政策的な背景があります。</p>
+        </div>
+        <div class="reason-box">
+          <h3>2. 「量から質」への戦略転換</h3>
+          <p>オレンジ等の輸入果実と競合するなかで、低価格な大量出荷をやめ、光センサー選果などを活用した高糖度・高単価みかんへ絞り込みました。</p>
+        </div>
+        <div class="reason-box">
+          <h3>3. 生産者の高齢化と後継者難</h3>
+          <p>みかん園地は急傾斜地が多く機械化が困難です。農家の高齢化や人手不足に伴う廃業・耕作放棄地化が全国で進行しました。</p>
+        </div>
+        <div class="reason-box">
+          <h3>4. 消費行動の変化と気候変動</h3>
+          <p>家庭内での果物離れ（皮をむく手間の敬遠）に加え、地球温暖化による高温障害やカメムシ等の病害虫被害が年々深刻化しています。</p>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      出典：農林水産省「作物統計調査」（1960年〜2024年）をもとに作成
+    </footer>
+  </div>
+
+  <script>
+    const years = [1960, 1965, 1970, 1975, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 2018, 2019, 2020, 2021, 2022, 2023, 2024];
+    const mikan = [903, 1319, 2552, 3461, 2893, 2282, 1653, 1502, 1143, 1132, 786, 778, 773.7, 748.8, 765.8, 749, 810.2, 681.6, 559.6];
+    const apple = [876, 1130, 1021, 996, 954, 1001, 1053, 948, 799.6, 836, 786.5, 812, 756.1, 701.6, 763.3, 661.9, 737.1, 604, 609.2];
+    const pear = [262, 358, 448, 489, 495, 493, 432, 404, 392.9, 347, 258.7, 246, 219.7, 186, 170.5, 184.7, 184.8, 183.4, 172.7];
+    const grape = [169, 225, 234, 283, 301, 296, 276.1, 252, 237.5, 206, 184.8, 179, 171.6, 172.5, 163.4, 164.1, 165.1, 167, 164.6];
+
+    const ctx = document.getElementById('harvestChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: years,
+        datasets: [
+          {
+            label: 'みかん',
+            data: mikan,
+            borderColor: '#e65100',
+            backgroundColor: 'rgba(230, 81, 0, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.25,
+            pointRadius: 4,
+            pointHoverRadius: 6
+          },
+          {
+            label: 'りんご',
+            data: apple,
+            borderColor: '#d32f2f',
+            borderWidth: 2,
+            borderDash: [4, 4],
+            fill: false,
+            tension: 0.2,
+            pointRadius: 3
+          },
+          {
+            label: '日本なし',
+            data: pear,
+            borderColor: '#7cb342',
+            borderWidth: 2,
+            borderDash: [2, 2],
+            fill: false,
+            tension: 0.2,
+            pointRadius: 3
+          },
+          {
+            label: 'ぶどう',
+            data: grape,
+            borderColor: '#7b1fa2',
+            borderWidth: 2,
+            borderDash: [2, 2],
+            fill: false,
+            tension: 0.2,
+            pointRadius: 3
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { boxWidth: 14, font: { size: 12 } }
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => `${context.dataset.label}: ${context.raw} 千トン`
+            }
+          }
+        },
+        scales: {
+          x: {
+            title: { display: true, text: '年次（年）' }
+          },
+          y: {
+            title: { display: true, text: '収穫量（千トン）' },
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
